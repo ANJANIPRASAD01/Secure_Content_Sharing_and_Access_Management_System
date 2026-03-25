@@ -41,6 +41,16 @@ public class UserService {
         if (phoneNumber != null) user.setPhoneNumber(phoneNumber);
         return userRepository.save(user);
     }
+
+    public User updateUserPhoneNumber(Long userId, String phoneNumber) {
+        User user = getUserById(userId);
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            user.setPhoneNumber(phoneNumber);
+        } else {
+            throw new RuntimeException("Phone number cannot be empty");
+        }
+        return userRepository.save(user);
+    }
     
     public User addWalletBalance(Long userId, Double amount) {
         User user = getUserById(userId);

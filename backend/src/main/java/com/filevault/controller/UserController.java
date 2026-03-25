@@ -209,6 +209,25 @@ public class UserController {
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/{userId}/update-phone")
+    public ResponseEntity<?> updatePhoneNumber(
+            @PathVariable Long userId,
+            @RequestBody com.filevault.dto.PhoneNumberRequest phoneRequest) {
+        try {
+            User updatedUser = userService.updateUserPhoneNumber(userId, phoneRequest.getPhoneNumber());
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Phone number updated successfully");
+            response.put("phoneNumber", updatedUser.getPhoneNumber());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Update phone number error: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to update phone number");
+            error.put("message", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+    }
     
     @GetMapping("/debug/all-files")
     public ResponseEntity<?> debugAllFiles() {

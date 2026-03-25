@@ -3,6 +3,7 @@ package com.filevault.controller;
 import com.filevault.dto.AccessRequestDTO;
 import com.filevault.dto.AccessRequestActionDTO;
 import com.filevault.service.AccessRequestService;
+import com.filevault.service.TwilioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public class AccessRequestController {
     
     @Autowired
     private AccessRequestService accessRequestService;
+
+    @Autowired
+    private TwilioService twilioService;
     
     @PostMapping("/request/{fileId}/{userId}")
     public ResponseEntity<?> requestAccess(
@@ -43,6 +47,16 @@ public class AccessRequestController {
             @RequestParam(value = "adminId") Long adminId) {
         try {
             AccessRequestDTO request = accessRequestService.approveRequest(action.getRequestId(), adminId);
+            
+            // Send SMS notifications
+            if (request.getRequester() != null && request.getRequester().getPhoneNumber() != null) {
+                twilioService.sendAccessApprovalSMS(
+                    request.getRequester().getPhoneNumber(),
+                    request.getRequester().getFirstName() + " " + request.getRequester().getLastName(),
+                    request.getFile().getFileName()
+                );
+            }
+            
             return new ResponseEntity<>(request, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Approve request error: {}", e.getMessage());
@@ -60,6 +74,15 @@ public class AccessRequestController {
         try {
             AccessRequestDTO request = accessRequestService.rejectRequest(
                     action.getRequestId(), adminId, action.getReason());
+            
+            // Send SMS notification of denial
+            if (request.getRequester() != null && request.getRequester().getPhoneNumber() != null) {
+                twilioService.sendAccessDenialSMS(
+                    request.getRequester().getPhoneNumber(),
+                    request.getFile().getFileName()
+                );
+            }
+            
             return new ResponseEntity<>(request, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Reject request error: {}", e.getMessage());
