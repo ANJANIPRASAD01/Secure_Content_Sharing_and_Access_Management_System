@@ -3,6 +3,5 @@
   "outputDirectory": "build",
   "env": {
     "REACT_APP_API_URL": "@filevault_backend_api_url"
-  },
-  "envPrefix": "REACT_APP_"
+  }
 }
