@@ -1,12 +1,13 @@
 services:
   - type: web
     name: filevault-backend
-    env: java
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/filevault-1.0.0.jar
+    runtime: docker
+    region: oregon
+    plan: free
     autoDeploy: true
+    dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: PORT
         value: 8080
-      - key: JAVA_VERSION
-        value: 17
+      - key: JAVA_OPTS
+        value: -Xmx512m
