@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axiosConfig';
 
 const AccessRequest = ({ fileId, fileName, userId, onRequestSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-
-  const token = localStorage.getItem('token');
 
   const handleRequestAccess = async () => {
     try {
@@ -14,12 +12,9 @@ const AccessRequest = ({ fileId, fileName, userId, onRequestSuccess }) => {
       setError(null);
       setMessage(null);
 
-      const response = await axios.post(
-        `http://localhost:8080/api/access-requests/request/${fileId}/${userId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      await api.post(
+        `/access-requests/request/${fileId}/${userId}`,
+        {}
       );
 
       setMessage(`Access request sent! The admin will review your request soon.`);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axiosConfig';
 
 const RequestManagement = ({ adminId }) => {
   const [requests, setRequests] = useState([]);
@@ -17,21 +17,18 @@ const RequestManagement = ({ adminId }) => {
   const [grantError, setGrantError] = useState(null);
   const [grantSuccess, setGrantSuccess] = useState(null);
 
-  const token = localStorage.getItem('token');
-
   useEffect(() => {
     fetchPendingRequests();
     fetchFiles();
   }, []);
 
+  // Note: fetchPendingRequests and fetchFiles are defined below
+
   const fetchPendingRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:8080/api/access-requests/admin/${adminId}/pending`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await api.get(
+        `/access-requests/admin/${adminId}/pending`
       );
       setRequests(response.data);
       setError(null);
@@ -45,11 +42,8 @@ const RequestManagement = ({ adminId }) => {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/admin/${adminId}/files`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await api.get(
+        `/admin/${adminId}/files`
       );
       setFiles(response.data);
     } catch (err) {
@@ -65,11 +59,8 @@ const RequestManagement = ({ adminId }) => {
     }
 
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/user/search?q=${encodeURIComponent(query)}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await api.get(
+        `/user/search?q=${encodeURIComponent(query)}`
       );
       setUsers(response.data);
     } catch (err) {
@@ -80,11 +71,10 @@ const RequestManagement = ({ adminId }) => {
 
   const handleApprove = async (requestId) => {
     try {
-      await axios.post(
-        'http://localhost:8080/api/access-requests/approve',
+      await api.post(
+        `/access-requests/approve`,
         { requestId, action: 'APPROVED' },
         {
-          headers: { Authorization: `Bearer ${token}` },
           params: { adminId }
         }
       );
@@ -101,15 +91,14 @@ const RequestManagement = ({ adminId }) => {
     const rejectReason = prompt('Enter reason for rejection (optional):');
 
     try {
-      await axios.post(
-        'http://localhost:8080/api/access-requests/reject',
+      await api.post(
+        `/access-requests/reject`,
         { 
           requestId, 
           action: 'REJECTED',
           reason: rejectReason || 'No reason provided'
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
           params: { adminId }
         }
       );
@@ -136,15 +125,12 @@ const RequestManagement = ({ adminId }) => {
       const expiryDate = new Date();
       expiryDate.setMonth(expiryDate.getMonth() + parseInt(timeLimitMonths));
 
-      const response = await axios.post(
-        'http://localhost:8080/api/access-control/grant',
+      await api.post(
+        `/access-control/grant`,
         {
           fileId: selectedFile,
           userId: selectedUser,
           timeLimitMonths: parseInt(timeLimitMonths)
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
         }
       );
 

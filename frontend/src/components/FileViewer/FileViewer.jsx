@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 
 const FileViewer = ({ file, userId, onClose }) => {
@@ -73,7 +73,7 @@ const FileViewer = ({ file, userId, onClose }) => {
         URL.revokeObjectURL(content.url);
       }
     };
-  }, [fileId, fileType, userId]);
+  }, [fileId, fileType, userId, content]);
 
   const handleDownload = () => {
     if (content?.blob) {

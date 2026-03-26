@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import api from '../api/axiosConfig';
 
 const FileUpload = ({ adminId, onUploadSuccess }) => {
@@ -18,8 +17,6 @@ const FileUpload = ({ adminId, onUploadSuccess }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [creatingCategory, setCreatingCategory] = useState(false);
-
-  const token = localStorage.getItem('token');
 
   // Fetch categories on component mount
   useEffect(() => {
