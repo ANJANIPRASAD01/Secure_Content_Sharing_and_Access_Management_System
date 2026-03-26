@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../api/axiosConfig';
 
 const RequestManagement = ({ adminId }) => {
@@ -17,15 +17,7 @@ const RequestManagement = ({ adminId }) => {
   const [grantError, setGrantError] = useState(null);
   const [grantSuccess, setGrantSuccess] = useState(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    fetchPendingRequests();
-    fetchFiles();
-  }, []);
-
-  // Note: fetchPendingRequests and fetchFiles are defined below
-
-  const fetchPendingRequests = async () => {
+  const fetchPendingRequests = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get(
@@ -39,9 +31,9 @@ const RequestManagement = ({ adminId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminId]);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       const response = await api.get(
         `/admin/${adminId}/files`
@@ -50,7 +42,12 @@ const RequestManagement = ({ adminId }) => {
     } catch (err) {
       console.error('Error fetching files:', err);
     }
-  };
+  }, [adminId]);
+
+  useEffect(() => {
+    fetchPendingRequests();
+    fetchFiles();
+  }, [fetchPendingRequests, fetchFiles]);
 
   const handleSearchUsers = async (query) => {
     setSearchQuery(query);
