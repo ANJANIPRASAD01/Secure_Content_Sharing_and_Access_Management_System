@@ -53,7 +53,7 @@ const FileEditor = ({ file, categories, onEditSuccess, onClose }) => {
         updatePayload.categoryId = parseInt(formData.categoryId);
       }
 
-      const response = await api.put(`/files/${file.id}`, updatePayload);
+      await api.put(`/files/${file.id}`, updatePayload);
       setSuccess('File details updated successfully!');
       setTimeout(() => {
         onEditSuccess();

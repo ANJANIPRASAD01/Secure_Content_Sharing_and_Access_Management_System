@@ -17,6 +17,7 @@ const RequestManagement = ({ adminId }) => {
   const [grantError, setGrantError] = useState(null);
   const [grantSuccess, setGrantSuccess] = useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchPendingRequests();
     fetchFiles();
